@@ -104,9 +104,27 @@ class SimplePlanner(QMainWindow):
         else:
             self.text += ':' + str(self.timeEdit.time().second())
 
-        self.list1.append(str(self.calendarWidget.selectedDate().year()) + '-' + str(
+        if len(str(self.calendarWidget.selectedDate().month())) == 1 and len(
+                str(self.calendarWidget.selectedDate().day())) == 1:
+            self.list1.append(str(self.calendarWidget.selectedDate().year()) + '-' + '0' + str(
+                self.calendarWidget.selectedDate().month()) + '-' + '0' + str(
+                self.calendarWidget.selectedDate().day()) + ' ' + self.text + ' - ' + self.lineEdit.text())
+
+        elif len(str(self.calendarWidget.selectedDate().month())) == 1:
+            self.list1.append(str(self.calendarWidget.selectedDate().year()) + '-' + '0' + str(
                 self.calendarWidget.selectedDate().month()) + '-' + str(
                 self.calendarWidget.selectedDate().day()) + ' ' + self.text + ' - ' + self.lineEdit.text())
+
+        elif len(str(self.calendarWidget.selectedDate().day())) == 1:
+            self.list1.append(str(self.calendarWidget.selectedDate().year()) + '-' + str(
+                self.calendarWidget.selectedDate().month()) + '-' + '0' + str(
+                self.calendarWidget.selectedDate().day()) + ' ' + self.text + ' - ' + self.lineEdit.text())
+
+        else:
+            self.list1.append(str(self.calendarWidget.selectedDate().year()) + '-' + str(
+                self.calendarWidget.selectedDate().month()) + '-' + str(
+                self.calendarWidget.selectedDate().day()) + ' ' + self.text + ' - ' + self.lineEdit.text())
+
         self.list1.sort()
         self.eventList.clear()
         for i in self.list1:
