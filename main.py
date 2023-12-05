@@ -88,6 +88,7 @@ class SimplePlanner(QMainWindow):
         uic.loadUi(f, self)
         self.addEventBtn.clicked.connect(self.Plan)
         self.text = ''
+        self.list1 = []
 
     def Plan(self):
         if len(str(self.timeEdit.time().hour())) == 1:
@@ -103,9 +104,14 @@ class SimplePlanner(QMainWindow):
         else:
             self.text += ':' + str(self.timeEdit.time().second())
 
-        self.eventList.addItem(str(self.calendarWidget.selectedDate().year()) + '-' + str(
-            self.calendarWidget.selectedDate().month()) + '-' + str(self.calendarWidget.selectedDate().day()) + ' ' +
-            self.text + ' - ' + self.lineEdit.text())
+        self.list1.append(self.text)
+        self.list1.sort()
+        self.eventList.clear()
+        for i in self.list1:
+            self.eventList.addItem(str(self.calendarWidget.selectedDate().year()) + '-' + str(
+                self.calendarWidget.selectedDate().month()) + '-' + str(
+                self.calendarWidget.selectedDate().day()) + ' ' +
+                                   i + ' - ' + self.lineEdit.text())
         self.text = ''
 
 
