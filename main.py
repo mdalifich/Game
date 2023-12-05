@@ -104,14 +104,13 @@ class SimplePlanner(QMainWindow):
         else:
             self.text += ':' + str(self.timeEdit.time().second())
 
-        self.list1.append(self.text)
+        self.list1.append(str(self.calendarWidget.selectedDate().year()) + '-' + str(
+                self.calendarWidget.selectedDate().month()) + '-' + str(
+                self.calendarWidget.selectedDate().day()) + ' ' + self.text + ' - ' + self.lineEdit.text())
         self.list1.sort()
         self.eventList.clear()
         for i in self.list1:
-            self.eventList.addItem(str(self.calendarWidget.selectedDate().year()) + '-' + str(
-                self.calendarWidget.selectedDate().month()) + '-' + str(
-                self.calendarWidget.selectedDate().day()) + ' ' +
-                                   i + ' - ' + self.lineEdit.text())
+            self.eventList.addItem(i)
         self.text = ''
 
 
