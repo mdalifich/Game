@@ -1,11 +1,10 @@
 import io
-import random
-import sys
 import math
+import sys
 
 from PyQt5 import uic
+from PyQt5.QtCore import QRectF
 from PyQt5.QtGui import QPainter, QColor
-from PyQt5.QtCore import QRectF, QPointF
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 template = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +22,7 @@ template = '''<?xml version="1.0" encoding="UTF-8"?>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPushButton" name="btn">
+  <widget class="QPushButton" name="draw">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -36,24 +35,11 @@ template = '''<?xml version="1.0" encoding="UTF-8"?>
     <string>Показать</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
      <x>270</x>
      <y>20</y>
-     <width>57</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>side:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>270</x>
-     <y>50</y>
      <width>57</width>
      <height>21</height>
     </rect>
@@ -66,7 +52,7 @@ template = '''<?xml version="1.0" encoding="UTF-8"?>
    <property name="geometry">
     <rect>
      <x>270</x>
-     <y>80</y>
+     <y>50</y>
      <width>57</width>
      <height>21</height>
     </rect>
@@ -75,7 +61,7 @@ template = '''<?xml version="1.0" encoding="UTF-8"?>
     <string>n:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="k">
    <property name="geometry">
     <rect>
      <x>310</x>
@@ -85,27 +71,14 @@ template = '''<?xml version="1.0" encoding="UTF-8"?>
     </rect>
    </property>
    <property name="text">
-    <string>300</string>
+    <string>0.9</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="n">
    <property name="geometry">
     <rect>
      <x>310</x>
      <y>50</y>
-     <width>471</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>0.9</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_3">
-   <property name="geometry">
-    <rect>
-     <x>310</x>
-     <y>80</y>
      <width>471</width>
      <height>23</height>
     </rect>
@@ -120,57 +93,54 @@ template = '''<?xml version="1.0" encoding="UTF-8"?>
 </ui>'''
 
 
-class Square1(QMainWindow):
+class Square2(QMainWindow):
     def __init__(self):
         super().__init__()
         f = io.StringIO(template)
         uic.loadUi(f, self)
         self.xUp, self.yUp = 50, 130
-        self.box = 300
+        self.box = 200
         self.color = QColor(250, 0, 0)
         self.rot = 0
         self.initUi()
 
     def initUi(self):
-        self.btn.clicked.connect(self.paint)
+        self.draw.clicked.connect(self.paint)
         self.do_paint = False
 
     def paintEvent(self, event):
         if self.do_paint:
             qp = QPainter()
             qp.begin(self)
-            self.draw(qp)
+            self.draw5(qp)
             qp.end()
 
     def paint(self, event):
         self.do_paint = True
         self.repaint()
 
-    def draw(self, qp):
+    def draw5(self, qp):
         self.rot = 0
-        self.xUp, self.yUp = -150, -150
-        self.XX = self.xUp + int(self.lineEdit.text()) // 2
-        self.YY = self.yUp + int(self.lineEdit.text()) // 2
-        self.box = int(self.lineEdit.text())
+        self.box = 200
+        self.xUp, self.yUp = -self.box / 2, -self.box / 2
+        self.XX = self.xUp + self.box / 2
+        self.YY = self.yUp + self.box / 2
         qp.setPen(self.color)
-        qp.translate(self.XX + 300, self.YY + 300)
-        self.maxu = 300 * float(self.lineEdit_2.text())
-        self.minu = 300 - (300 * float(self.lineEdit_2.text()))
-        for _ in range(int(self.lineEdit_3.text())):
-            self.Rect = QRectF(self.xUp, self.yUp, self.box, self.box)
-            self.box *= float(self.lineEdit_2.text())
+        qp.translate(self.XX + self.box, self.YY + self.box)
+        for _ in range(int(self.n.text())):
+            self.Rect = QRectF(int(self.xUp), int(self.yUp), int(self.box), int(self.box))
+            self.maxu = self.box * float(self.k.text())
+            self.minu = self.box - (self.box * float(self.k.text()))
+            self.box = math.sqrt(self.minu * self.minu + self.maxu * self.maxu)
             self.xUp = self.XX - self.box / 2
             self.yUp = self.YY - self.box / 2
-
+            self.rot = (math.atan(self.minu / self.maxu) * 180) / math.pi
             qp.drawRect(self.Rect)
-
-
             qp.rotate(self.rot)
-
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Square1()
+    ex = Square2()
     ex.show()
     sys.exit(app.exec_())
