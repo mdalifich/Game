@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for bomb in Bombes:
-                    bomb.get_event(event)
+                    bomb.update(event)
 
         pygame.display.update()
 
