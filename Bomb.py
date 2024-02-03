@@ -16,9 +16,10 @@ class Bomb(pygame.sprite.Sprite):
         super().__init__(group)
         self.image = load_image("data/bomb.png")
         self.image_boom = load_image("data/boom.png")
+        self.tick = 0
         self.rect = self.image.get_rect()
-        self.rect.x = random.randrange(500)
-        self.rect.y = random.randrange(500)
+        self.rect.x = random.randrange(800)
+        self.rect.y = random.randrange(800)
 
     def update(self, *args):
         self.rect = self.rect.move(random.randrange(3) - 1,
@@ -26,3 +27,7 @@ class Bomb(pygame.sprite.Sprite):
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and \
                 self.rect.collidepoint(args[0].pos):
             self.image = self.image_boom
+        if self.image == self.image_boom:
+            self.tick += 1
+        if self.tick == 10:
+            self.kill()

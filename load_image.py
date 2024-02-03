@@ -18,3 +18,9 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+def draw_text(wind, text, x, y):
+    font = pygame.font.Font(None, 50)
+    text_surface = font.render(text, True, (255, 0, 0))
+    wind.blit(text_surface, (x, y))

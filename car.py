@@ -12,14 +12,14 @@ class Cars(pygame.sprite.Sprite):
         self.image = load_image('data/car.png')
         self.rect = Rect(self.x, self.y, 150, 95)
         self.screen = screen
-        self.vect = 20
+        self.vect = 10
 
     def draw(self):
         self.screen.blit(self.image, (self.rect.x, self.rect.y))
-        if self.rect.x >= 350:
+        if self.rect.x >= 650:
             self.image = pygame.transform.flip(self.image, 1, 0)
-            self.vect = -20
-        if self.rect.x < 0:
+            self.vect = -10
+        if self.rect.x < -1:
             self.image = pygame.transform.flip(self.image, 1, 0)
-            self.vect = 20
+            self.vect = 10
         self.rect.x += self.vect
