@@ -7,6 +7,8 @@ import curs
 from curs import *
 import Person
 from Person import *
+import car
+from car import *
 
 
 if __name__ == '__main__':
@@ -16,6 +18,7 @@ if __name__ == '__main__':
     pygame.mouse.set_visible(False)
     NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
     NewPers = Pers(0, 0, screen)
+    NewCar = Cars(0, 300, screen)
 
     while pygame.event.wait().type != pygame.QUIT:
         for event in pygame.event.get():
@@ -49,11 +52,11 @@ if __name__ == '__main__':
             NewPers.rect.x -= 10
 
         NewPers.draw()
+        NewCar.draw()
 
         if pygame.mouse.get_focused():
             NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
             NewCurs.draw()
-
 
         pygame.display.flip()
     pygame.quit()
