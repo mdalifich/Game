@@ -95,7 +95,7 @@ if __name__ == '__main__':
             Bull.draw(screen)
             for i in Bull:
                 if not pygame.sprite.collide_mask(i, Ship):
-                    i.rect.y += 20
+                    i.rect.y += 10
                 else:
                     i.tick += 1
                 if pygame.sprite.collide_mask(i, Ship):
