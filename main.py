@@ -1,6 +1,6 @@
 import pygame
 from pygame import *
-from random import randint
+from random import randint, randrange
 import os
 import load_image
 from load_image import *
@@ -63,7 +63,7 @@ if __name__ == '__main__':
             GameOverer = GameOverIcon(-800, 0, screen)
             Bombes = pygame.sprite.Group()
             Bull = pygame.sprite.Group()
-            for _ in range(10):
+            for _ in range(20):
                 Bomb(Bombes)
             reset = False
             EndGame = False
@@ -105,6 +105,11 @@ if __name__ == '__main__':
                     i.kill()
                     Immortal = True
             for i in Bombes:
+                for j in Bombes:
+                    if i != j:
+                        while pygame.sprite.collide_mask(i, j):
+                            i.rect.x = random.randrange(800)
+                            i.rect.y = random.randrange(800)
                 if pygame.sprite.collide_mask(i, NewPers) and i.image != i.image_boom and not Immortal:
                     HealPoints -= 1
                     Immortal = True
