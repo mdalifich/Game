@@ -15,6 +15,8 @@ import HpBar
 from HpBar import *
 import GameOverIcon
 from GameOverIcon import *
+import Button
+from Button import *
 
 
 if __name__ == '__main__':
@@ -22,10 +24,12 @@ if __name__ == '__main__':
     size = 800
     screen = pygame.display.set_mode((size, size))
     pygame.mouse.set_visible(False)
+    RemakeBTN = Button('Повторим?', 300, 600, 200, 50, (50, 50, 50))
+    reset = True
+    running = True
     NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
     NewPers = Pers(100, 100, screen)
     NewCar = Cars(0, 300, screen)
-    running = True
     HealPoints = 3
     HealBar = Bar(0, 0, screen)
     Immortal = False
@@ -34,15 +38,34 @@ if __name__ == '__main__':
     Bombes = pygame.sprite.Group()
     for _ in range(10):
         Bomb(Bombes)
+    EndGame = False
 
     while running:
+        if reset:
+            NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
+            NewPers = Pers(100, 100, screen)
+            NewCar = Cars(0, 300, screen)
+            running = True
+            HealPoints = 3
+            HealBar = Bar(0, 0, screen)
+            Immortal = False
+            tick = 0
+            GameOverer = GameOverIcon(-800, 0, screen)
+            Bombes = pygame.sprite.Group()
+            for _ in range(10):
+                Bomb(Bombes)
+            reset = False
+            EndGame = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
+            pos = pygame.mouse.get_pos()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for bomb in Bombes:
                     bomb.update(event)
+                if RemakeBTN.is_over(pos) and EndGame:
+                    reset = True
 
         if HealPoints != 0:
             # Чтобы экран был черный сюда нада вписать (0, 0, 0)
@@ -63,7 +86,7 @@ if __name__ == '__main__':
 
             if Immortal:
                 tick += 1
-            if tick == 25:
+            if tick == 50:
                 tick = 0
                 Immortal = False
 
@@ -82,11 +105,13 @@ if __name__ == '__main__':
                 NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                 NewCurs.draw()
         else:
+            screen.fill((250, 250, 250))
+            GameOverer.draw()
+            RemakeBTN.draw(screen, (100, 100, 100))
             if pygame.mouse.get_focused():
                 NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                 NewCurs.draw()
-            screen.fill((250, 250, 250))
-            GameOverer.draw()
+            EndGame = True
 
         pygame.display.update()
 
