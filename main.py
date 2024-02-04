@@ -1,5 +1,6 @@
 import pygame
 from pygame import *
+from random import randint
 import os
 import load_image
 from load_image import *
@@ -17,6 +18,10 @@ import GameOverIcon
 from GameOverIcon import *
 import Button
 from Button import *
+import Shipi
+from Shipi import *
+import Bullet
+from Bullet import *
 
 
 if __name__ == '__main__':
@@ -33,15 +38,19 @@ if __name__ == '__main__':
     HealPoints = 3
     HealBar = Bar(0, 0, screen)
     Immortal = False
+    Ship = Shipi(0, 757, screen)
     tick = 0
+    Rebullet = 0
     GameOverer = GameOverIcon(-800, 0, screen)
     Bombes = pygame.sprite.Group()
+    Bull = pygame.sprite.Group()
     for _ in range(10):
         Bomb(Bombes)
     EndGame = False
 
     while running:
         if reset:
+            Rebullet = 0
             NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
             NewPers = Pers(100, 100, screen)
             NewCar = Cars(0, 300, screen)
@@ -50,8 +59,10 @@ if __name__ == '__main__':
             HealBar = Bar(0, 0, screen)
             Immortal = False
             tick = 0
+            Ship = Shipi(0, 757, screen)
             GameOverer = GameOverIcon(-800, 0, screen)
             Bombes = pygame.sprite.Group()
+            Bull = pygame.sprite.Group()
             for _ in range(10):
                 Bomb(Bombes)
             reset = False
@@ -70,17 +81,37 @@ if __name__ == '__main__':
         if HealPoints != 0:
             # Чтобы экран был черный сюда нада вписать (0, 0, 0)
             screen.fill((255, 255, 255))
+            Rebullet += 1
+            if Rebullet == 25:
+                Bullet(randint(0, 800), 0, screen, Bull)
+                Rebullet = 0
             draw_text(screen, f"Immortal = {Immortal}", 500, 0)
             NewPers.draw()
             NewCar.draw()
             Bombes.draw(screen)
             Bombes.update()
             HealBar.draw(HealPoints)
+            Ship.draw()
+            Bull.draw(screen)
+            for i in Bull:
+                if not pygame.sprite.collide_mask(i, Ship):
+                    i.rect.y += 20
+                else:
+                    i.tick += 1
+                if pygame.sprite.collide_mask(i, Ship):
+                    i.kill()
+                if pygame.sprite.collide_mask(i, NewPers):
+                    HealPoints -= 1
+                    i.kill()
+                    Immortal = True
             for i in Bombes:
                 if pygame.sprite.collide_mask(i, NewPers) and i.image != i.image_boom and not Immortal:
                     HealPoints -= 1
                     Immortal = True
             if pygame.sprite.collide_mask(NewCar, NewPers) and not Immortal:
+                HealPoints -= 1
+                Immortal = True
+            if pygame.sprite.collide_mask(Ship, NewPers) and not Immortal:
                 HealPoints -= 1
                 Immortal = True
 
