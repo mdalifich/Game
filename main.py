@@ -22,6 +22,8 @@ import Shipi
 from Shipi import *
 import Bullet
 from Bullet import *
+import wall
+from wall import *
 
 
 if __name__ == '__main__':
@@ -41,11 +43,18 @@ if __name__ == '__main__':
     Ship = Shipi(0, 757, screen)
     tick = 0
     Rebullet = 0
+    speedPersRight = 5
+    speedPersLeft = 5
+    speedPersUp = 5
+    speedPersDown = 5
     GameOverer = GameOverIcon(-800, 0, screen)
     Bombes = pygame.sprite.Group()
     Bull = pygame.sprite.Group()
+    Walls = pygame.sprite.Group()
     for _ in range(10):
         Bomb(Bombes)
+    for _ in range(1):
+        Barrier(randint(0, 700), randint(0, 700), screen, Walls)
     EndGame = False
 
     while running:
@@ -63,10 +72,16 @@ if __name__ == '__main__':
             GameOverer = GameOverIcon(-800, 0, screen)
             Bombes = pygame.sprite.Group()
             Bull = pygame.sprite.Group()
+            speedPersRight = 5
+            speedPersLeft = 5
+            speedPersUp = 5
+            speedPersDown = 5
             for _ in range(20):
                 Bomb(Bombes)
             reset = False
             EndGame = False
+            for _ in range(5):
+                Barrier(randint(0, 600), randint(0, 600), screen, Walls)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -93,6 +108,7 @@ if __name__ == '__main__':
             HealBar.draw(HealPoints)
             Ship.draw()
             Bull.draw(screen)
+            Walls.draw(screen)
             for i in Bull:
                 if not pygame.sprite.collide_mask(i, Ship):
                     i.rect.y += 10
@@ -127,15 +143,42 @@ if __name__ == '__main__':
                 Immortal = False
 
             key = pygame.key.get_pressed()
-            speedPers = 5
             if key[pygame.K_UP]:
-                NewPers.rect.y -= speedPers
+                speedPersRight = 5
+                speedPersLeft = 5
+                speedPersDown = 5
+                NewPers.rect.y -= speedPersUp
+                for i in Walls:
+                    if pygame.sprite.collide_mask(i, NewPers):
+                        speedPersUp = 0
+                        print(2)
             elif key[pygame.K_DOWN]:
-                NewPers.rect.y += speedPers
+                speedPersRight = 5
+                speedPersLeft = 5
+                speedPersUp = 5
+                NewPers.rect.y += speedPersDown
+                for i in Walls:
+                    if pygame.sprite.collide_mask(i, NewPers):
+                        speedPersDown = 0
+                        print(3)
             elif key[pygame.K_RIGHT]:
-                NewPers.rect.x += speedPers
+                speedPersLeft = 5
+                speedPersUp = 5
+                speedPersDown = 5
+                NewPers.rect.x += speedPersRight
+                for i in Walls:
+                    if pygame.sprite.collide_mask(i, NewPers):
+                        speedPersRight = 0
+                        print(4)
             elif key[pygame.K_LEFT]:
-                NewPers.rect.x -= speedPers
+                speedPersRight = 5
+                speedPersUp = 5
+                speedPersDown = 5
+                NewPers.rect.x -= speedPersLeft
+                for i in Walls:
+                    if pygame.sprite.collide_mask(i, NewPers):
+                        speedPersLeft = 0
+                        print(1)
 
             if pygame.mouse.get_focused():
                 NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
