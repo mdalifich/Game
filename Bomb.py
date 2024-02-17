@@ -14,8 +14,8 @@ class Bomb(pygame.sprite.Sprite):
         # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
         # Это очень важно !!!
         super().__init__(group)
-        self.image = load_image("data/bomb.png")
-        self.image_boom = load_image("data/boom.png")
+        self.image = load_image("static/bomb.png")
+        self.image_boom = load_image("static/boom.png")
         self.tick = 0
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(800)

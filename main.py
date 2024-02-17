@@ -24,12 +24,15 @@ import Bullet
 from Bullet import *
 import wall
 from wall import *
+import Cam
+from Cam import *
 
 
+size = width, height = (800, 800)
 if __name__ == '__main__':
     pygame.init()
-    size = 800
-    screen = pygame.display.set_mode((size, size))
+    size = width, height = (800, 800)
+    screen = pygame.display.set_mode(size)
     pygame.mouse.set_visible(False)
     RemakeBTN = Button('Повторим?', 300, 600, 200, 50, (50, 50, 50))
     reset = True
@@ -51,9 +54,11 @@ if __name__ == '__main__':
     Bombes = pygame.sprite.Group()
     Bull = pygame.sprite.Group()
     Walls = pygame.sprite.Group()
+    camera = Camera()
     for _ in range(10):
         Bomb(Bombes)
     for _ in range(1):
+
         Barrier(randint(0, 700), randint(0, 700), screen, Walls)
     EndGame = False
 
@@ -71,6 +76,7 @@ if __name__ == '__main__':
             Ship = Shipi(0, 757, screen)
             GameOverer = GameOverIcon(-800, 0, screen)
             Bombes = pygame.sprite.Group()
+            Walls = pygame.sprite.Group()
             Bull = pygame.sprite.Group()
             speedPersRight = 5
             speedPersLeft = 5
@@ -80,8 +86,11 @@ if __name__ == '__main__':
                 Bomb(Bombes)
             reset = False
             EndGame = False
-            for _ in range(5):
+            for i in range(5):
                 Barrier(randint(0, 600), randint(0, 600), screen, Walls)
+                while pygame.sprite.collide_mask(Walls.sprites()[i], NewCar):
+                    Walls.sprites()[i].rect.x = random.randrange(800)
+                    Walls.sprites()[i].rect.y = random.randrange(800)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -109,11 +118,24 @@ if __name__ == '__main__':
             Ship.draw()
             Bull.draw(screen)
             Walls.draw(screen)
+            camera.update(NewPers)
+            for sprite in Bombes:
+                camera.apply(sprite)
+            for sprite in Walls:
+                camera.apply(sprite)
+            for sprite in Bull:
+                camera.apply(sprite)
+            camera.apply(Ship)
+            camera.apply(NewCar)
+            camera.apply(NewPers)
             for i in Bull:
                 if not pygame.sprite.collide_mask(i, Ship):
                     i.rect.y += 10
                 else:
                     i.tick += 1
+                for j in Walls.sprites():
+                    if pygame.sprite.collide_mask(i, j):
+                        i.kill()
                 if pygame.sprite.collide_mask(i, Ship):
                     i.kill()
                 if pygame.sprite.collide_mask(i, NewPers):
@@ -123,7 +145,7 @@ if __name__ == '__main__':
             for i in Bombes:
                 for j in Bombes:
                     if i != j:
-                        while pygame.sprite.collide_mask(i, j):
+                        while pygame.sprite.collide_mask(i, j) or 800 < i.rect.x or i.rect.x < 0 or 800 < i.rect.y or 0 > i.rect.y:
                             i.rect.x = random.randrange(800)
                             i.rect.y = random.randrange(800)
                 if pygame.sprite.collide_mask(i, NewPers) and i.image != i.image_boom and not Immortal:
@@ -141,7 +163,28 @@ if __name__ == '__main__':
             if tick == 50:
                 tick = 0
                 Immortal = False
-
+            for i in Walls:
+                if pygame.sprite.collide_mask(i, NewCar):
+                    NewCar.image = pygame.transform.flip(NewCar.image, 1, 0)
+                    NewCar.vect = -1 * NewCar.vect
+                if i.rot == 90:
+                    if i.rect.y > 800:
+                        i.rect.y = -200
+                    if i.rect.y < -200:
+                        i.rect.y = 800
+                    if i.rect.x > 800:
+                        i.rect.x = -50
+                    if i.rect.x < -50:
+                        i.rect.x = 800
+                else:
+                    if i.rect.y > 800:
+                        i.rect.y = -50
+                    if i.rect.y < -50:
+                        i.rect.y = 800
+                    if i.rect.x > 800:
+                        i.rect.x = -200
+                    if i.rect.x < -200:
+                        i.rect.x = 800
             key = pygame.key.get_pressed()
             if key[pygame.K_UP]:
                 speedPersRight = 5
@@ -151,6 +194,7 @@ if __name__ == '__main__':
                 for i in Walls:
                     if pygame.sprite.collide_mask(i, NewPers):
                         speedPersUp = 0
+                        NewPers.rect.y += 5
                         print(2)
             elif key[pygame.K_DOWN]:
                 speedPersRight = 5
@@ -160,7 +204,7 @@ if __name__ == '__main__':
                 for i in Walls:
                     if pygame.sprite.collide_mask(i, NewPers):
                         speedPersDown = 0
-                        print(3)
+                        NewPers.rect.y -= 5
             elif key[pygame.K_RIGHT]:
                 speedPersLeft = 5
                 speedPersUp = 5
@@ -169,6 +213,7 @@ if __name__ == '__main__':
                 for i in Walls:
                     if pygame.sprite.collide_mask(i, NewPers):
                         speedPersRight = 0
+                        NewPers.rect.x -= 5
                         print(4)
             elif key[pygame.K_LEFT]:
                 speedPersRight = 5
@@ -178,7 +223,7 @@ if __name__ == '__main__':
                 for i in Walls:
                     if pygame.sprite.collide_mask(i, NewPers):
                         speedPersLeft = 0
-                        print(1)
+                        NewPers.rect.x += 5
 
             if pygame.mouse.get_focused():
                 NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]

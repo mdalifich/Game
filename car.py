@@ -9,7 +9,7 @@ class Cars(pygame.sprite.Sprite):
     def __init__(self, x, y, screen):
         super().__init__()
         self.x, self.y = x, y
-        self.image = load_image('data/car.png')
+        self.image = load_image('static/car.png')
         self.rect = Rect(self.x, self.y, 150, 95)
         self.screen = screen
         self.vect = 10

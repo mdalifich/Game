@@ -9,7 +9,7 @@ class GameOverIcon(pygame.sprite.Sprite):
     def __init__(self, x, y, screen):
         super().__init__()
         self.x, self.y = x, y
-        self.image = load_image('data/GameOver.png')
+        self.image = load_image('static/GameOver.png')
         self.rect = Rect(self.x, self.y, 800, 800)
         self.screen = screen
 

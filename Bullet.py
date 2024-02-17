@@ -9,7 +9,7 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, screen, group):
         super().__init__(group)
         self.x, self.y = x, y
-        self.image = load_image('data/bullet.png')
+        self.image = load_image('static/bullet.png')
         self.image = pygame.transform.scale(self.image, (40, 12))
         self.image = pygame.transform.rotate(self.image, -90.0)
         self.rect = Rect(self.x, self.y, 12, 40)
