@@ -26,6 +26,8 @@ import wall
 from wall import *
 import Cam
 from Cam import *
+import Background
+from Background import *
 
 
 size = width, height = (800, 800)
@@ -38,7 +40,7 @@ if __name__ == '__main__':
     reset = True
     running = True
     NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
-    NewPers = Pers(100, 100, screen)
+    NewPers = Pers(400, 400, screen)
     NewCar = Cars(0, 300, screen)
     HealPoints = 3
     HealBar = Bar(0, 0, screen)
@@ -58,9 +60,9 @@ if __name__ == '__main__':
     for _ in range(10):
         Bomb(Bombes)
     for _ in range(1):
-
         Barrier(randint(0, 700), randint(0, 700), screen, Walls)
     EndGame = False
+    background = Back(screen)
 
     while running:
         if reset:
@@ -82,13 +84,20 @@ if __name__ == '__main__':
             speedPersLeft = 5
             speedPersUp = 5
             speedPersDown = 5
+            background = Back(screen)
             for _ in range(20):
                 Bomb(Bombes)
+                for i in Bombes:
+                    for j in Bombes:
+                        if i != j:
+                            while pygame.sprite.collide_mask(i, NewPers):
+                                i.rect.x = random.randrange(800)
+                                i.rect.y = random.randrange(800)
             reset = False
             EndGame = False
-            for i in range(5):
-                Barrier(randint(0, 600), randint(0, 600), screen, Walls)
-                while pygame.sprite.collide_mask(Walls.sprites()[i], NewCar):
+            for i in range(10):
+                Barrier(randint(-700, 600), randint(-700, 600), screen, Walls)
+                while pygame.sprite.collide_mask(Walls.sprites()[i], NewCar) or pygame.sprite.collide_mask(Walls.sprites()[i], NewPers):
                     Walls.sprites()[i].rect.x = random.randrange(800)
                     Walls.sprites()[i].rect.y = random.randrange(800)
 
@@ -109,7 +118,7 @@ if __name__ == '__main__':
             if Rebullet == 25:
                 Bullet(randint(0, 800), 0, screen, Bull)
                 Rebullet = 0
-            draw_text(screen, f"Immortal = {Immortal}", 500, 0)
+            background.draw()
             NewPers.draw()
             NewCar.draw()
             Bombes.draw(screen)
@@ -118,6 +127,8 @@ if __name__ == '__main__':
             Ship.draw()
             Bull.draw(screen)
             Walls.draw(screen)
+            HealBar.draw(HealPoints)
+            draw_text(screen, f"Immortal = {Immortal}", 500, 0)
             camera.update(NewPers)
             for sprite in Bombes:
                 camera.apply(sprite)
