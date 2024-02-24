@@ -11,17 +11,11 @@ class Barrier(pygame.sprite.Sprite):
         super().__init__(group)
         self.x, self.y = x, y
         self.image = load_image('static/wall.png')
-        self.rot = 90 * randint(0, 1)
-        self.image = pygame.transform.scale(self.image, (200, 50))
-        self.image = pygame.transform.rotate(self.image, self.rot)
-        if self.rot == 90:
-            self.rect = Rect(self.x, self.y, 50, 200)
-        else:
-            self.rect = Rect(self.x, self.y, 200, 50)
+        self.image = pygame.transform.scale(self.image, (82, 82))
+        self.rect = Rect(self.x, self.y, 82, 82)
         self.screen = screen
 
     def draw(self):
         self.screen.blit(self.image, (self.rect.x, self.rect.y))
         if self.rect.y > 800:
             self.rect.y = 0
-        print(self.rect.y)

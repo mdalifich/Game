@@ -4,6 +4,19 @@ import os
 import sys
 
 
+def load_level(filename):
+    filename = "static/" + filename
+    # читаем уровень, убирая символы перевода строки
+    with open(filename, 'r') as mapFile:
+        level_map = [line.strip() for line in mapFile]
+
+    # и подсчитываем максимальную длину
+    max_width = max(map(len, level_map))
+
+    # дополняем каждую строку пустыми клетками ('.')
+    return list(level_map)
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('', name)
     if not os.path.isfile(fullname):

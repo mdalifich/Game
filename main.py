@@ -59,17 +59,29 @@ if __name__ == '__main__':
     camera = Camera()
     for _ in range(10):
         Bomb(Bombes)
-    for _ in range(1):
-        Barrier(randint(0, 700), randint(0, 700), screen, Walls)
     EndGame = False
     background = Back(screen)
+
+
+    def generate_level(level):
+        new_player, x, y = None, None, None
+        global NewPers, NewCar
+        for y in range(len(level)):
+            for x in range(len(level[y])):
+                if level[y][x] == '@':
+                    Barrier(x * 82, y * 82, screen, Walls)
+                elif level[y][x] == '#':
+                    NewCar = Cars(x * 82, y * 82, screen)
+                elif level[y][x] == 'P':
+                    NewPers = Pers(x * 82, y * 82, screen)
+        # вернем игрока, а также размер поля в клетках
+        return new_player, x, y
+
 
     while running:
         if reset:
             Rebullet = 0
             NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
-            NewPers = Pers(100, 100, screen)
-            NewCar = Cars(0, 300, screen)
             running = True
             HealPoints = 3
             HealBar = Bar(0, 0, screen)
@@ -95,11 +107,7 @@ if __name__ == '__main__':
                                 i.rect.y = random.randrange(800)
             reset = False
             EndGame = False
-            for i in range(10):
-                Barrier(randint(-700, 600), randint(-700, 600), screen, Walls)
-                while pygame.sprite.collide_mask(Walls.sprites()[i], NewCar) or pygame.sprite.collide_mask(Walls.sprites()[i], NewPers):
-                    Walls.sprites()[i].rect.x = random.randrange(800)
-                    Walls.sprites()[i].rect.y = random.randrange(800)
+            generate_level(load_level('level1.txt'))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -175,27 +183,18 @@ if __name__ == '__main__':
                 tick = 0
                 Immortal = False
             for i in Walls:
+                if i.rect.y > 800:
+                    i.rect.y = -82
+                if i.rect.y < -82:
+                    i.rect.y = 800
+                if i.rect.x > 800:
+                    i.rect.x = -82
+                if i.rect.x < -82:
+                    i.rect.x = 800
                 if pygame.sprite.collide_mask(i, NewCar):
                     NewCar.image = pygame.transform.flip(NewCar.image, 1, 0)
                     NewCar.vect = -1 * NewCar.vect
-                if i.rot == 90:
-                    if i.rect.y > 800:
-                        i.rect.y = -200
-                    if i.rect.y < -200:
-                        i.rect.y = 800
-                    if i.rect.x > 800:
-                        i.rect.x = -50
-                    if i.rect.x < -50:
-                        i.rect.x = 800
-                else:
-                    if i.rect.y > 800:
-                        i.rect.y = -50
-                    if i.rect.y < -50:
-                        i.rect.y = 800
-                    if i.rect.x > 800:
-                        i.rect.x = -200
-                    if i.rect.x < -200:
-                        i.rect.x = 800
+
             key = pygame.key.get_pressed()
             if key[pygame.K_UP]:
                 speedPersRight = 5
@@ -206,7 +205,7 @@ if __name__ == '__main__':
                     if pygame.sprite.collide_mask(i, NewPers):
                         speedPersUp = 0
                         NewPers.rect.y += 5
-                        print(2)
+
             elif key[pygame.K_DOWN]:
                 speedPersRight = 5
                 speedPersLeft = 5
@@ -225,7 +224,6 @@ if __name__ == '__main__':
                     if pygame.sprite.collide_mask(i, NewPers):
                         speedPersRight = 0
                         NewPers.rect.x -= 5
-                        print(4)
             elif key[pygame.K_LEFT]:
                 speedPersRight = 5
                 speedPersUp = 5
