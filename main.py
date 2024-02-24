@@ -28,6 +28,10 @@ import Cam
 from Cam import *
 import Background
 from Background import *
+import Key
+from Key import *
+import Doors
+from Doors import *
 
 
 size = width, height = (800, 800)
@@ -57,10 +61,13 @@ if __name__ == '__main__':
     Bull = pygame.sprite.Group()
     Walls = pygame.sprite.Group()
     camera = Camera()
+    door = DDoors(screen)
+    level = 1
     for _ in range(10):
         Bomb(Bombes)
     EndGame = False
     background = Back(screen)
+    MyKey = Keys(screen)
 
 
     def generate_level(level):
@@ -72,6 +79,8 @@ if __name__ == '__main__':
                     Barrier(x * 82, y * 82, screen, Walls)
                 elif level[y][x] == '#':
                     NewCar = Cars(x * 82, y * 82, screen)
+                elif level[y][x] == '$':
+                    pass
                 elif level[y][x] == 'P':
                     NewPers = Pers(x * 82, y * 82, screen)
         # вернем игрока, а также размер поля в клетках
@@ -81,12 +90,14 @@ if __name__ == '__main__':
     while running:
         if reset:
             Rebullet = 0
+            MyKey = Keys(screen)
             NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
             running = True
             HealPoints = 3
             HealBar = Bar(0, 0, screen)
             Immortal = False
             tick = 0
+            door = DDoors(screen)
             Ship = Shipi(0, 757, screen)
             GameOverer = GameOverIcon(-800, 0, screen)
             Bombes = pygame.sprite.Group()
@@ -107,7 +118,7 @@ if __name__ == '__main__':
                                 i.rect.y = random.randrange(800)
             reset = False
             EndGame = False
-            generate_level(load_level('level1.txt'))
+            generate_level(load_level(f'level{str(level)}.txt'))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -135,6 +146,8 @@ if __name__ == '__main__':
             Ship.draw()
             Bull.draw(screen)
             Walls.draw(screen)
+            door.draw()
+            MyKey.draw()
             HealBar.draw(HealPoints)
             draw_text(screen, f"Immortal = {Immortal}", 500, 0)
             camera.update(NewPers)
@@ -147,6 +160,18 @@ if __name__ == '__main__':
             camera.apply(Ship)
             camera.apply(NewCar)
             camera.apply(NewPers)
+            camera.apply(MyKey)
+            camera.apply(door)
+            if pygame.sprite.collide_mask(MyKey, NewPers):
+                MyKey.kill()
+                door.flag = True
+            if pygame.sprite.collide_mask(door, NewPers):
+                if door.flag:
+                    reset = True
+                    level += 1
+                    if level == 3:
+                        level = 1
+
             for i in Bull:
                 if not pygame.sprite.collide_mask(i, Ship):
                     i.rect.y += 10
@@ -182,6 +207,16 @@ if __name__ == '__main__':
             if tick == 50:
                 tick = 0
                 Immortal = False
+
+            if door.rect.y > 1200:
+                door.rect.y = -1200
+            if door.rect.y < -1200:
+                door.rect.y = 1200
+            if door.rect.x > 1200:
+                door.rect.x = -1200
+            if door.rect.x < -1200:
+                door.rect.x = 1200
+
             for i in Walls:
                 if i.rect.y > 800:
                     i.rect.y = -82
