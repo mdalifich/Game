@@ -63,6 +63,8 @@ if __name__ == '__main__':
     camera = Camera()
     door = DDoors(screen)
     level = 1
+    ClickToKey = False
+    BaseCollideCoord = tuple()
     for _ in range(10):
         Bomb(Bombes)
     EndGame = False
@@ -108,6 +110,9 @@ if __name__ == '__main__':
             speedPersUp = 5
             speedPersDown = 5
             background = Back(screen)
+            ClickToKey = False
+            BaseCollideCoord = tuple()
+
             for _ in range(20):
                 Bomb(Bombes)
                 for i in Bombes:
@@ -129,6 +134,11 @@ if __name__ == '__main__':
                     bomb.update(event)
                 if RemakeBTN.is_over(pos) and EndGame:
                     reset = True
+                if pygame.sprite.collide_mask(NewCurs, MyKey):
+                    ClickToKey = True
+                    BaseCollideCoord = pos
+            if event.type == pygame.MOUSEBUTTONUP:
+                ClickToKey = False
 
         if HealPoints != 0:
             # Чтобы экран был черный сюда нада вписать (0, 0, 0)
@@ -162,9 +172,28 @@ if __name__ == '__main__':
             camera.apply(NewPers)
             camera.apply(MyKey)
             camera.apply(door)
-            if pygame.sprite.collide_mask(MyKey, NewPers):
-                MyKey.kill()
+            pos = pygame.mouse.get_pos()
+
+            if ClickToKey and pygame.sprite.collide_mask(MyKey, NewCurs):
+                MyKey.rect.x += pos[0] - BaseCollideCoord[0]
+                MyKey.rect.y += pos[1] - BaseCollideCoord[1]
+                BaseCollideCoord = pos
+
+            if not pygame.mouse.get_focused():
+                ClickToKey = False
+
+            if pygame.sprite.collide_mask(door, MyKey):
                 door.flag = True
+                ClickToKey = False
+                MyKey.kill()
+
+            for i in Walls:
+                if pygame.sprite.collide_mask(MyKey, i):
+                    ClickToKey = False
+                    MyKey.rect.x += 90
+                    if pygame.sprite.collide_mask(MyKey, i):
+                        MyKey.rect.y += 90
+
             if pygame.sprite.collide_mask(door, NewPers):
                 if door.flag:
                     reset = True
