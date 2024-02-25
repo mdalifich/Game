@@ -70,6 +70,7 @@ if __name__ == '__main__':
     EndGame = False
     background = Back(screen)
     MyKey = Keys(screen)
+    Minimizade = 0
 
 
     def generate_level(level):
@@ -112,6 +113,7 @@ if __name__ == '__main__':
             background = Back(screen)
             ClickToKey = False
             BaseCollideCoord = tuple()
+            Minimizade = 0
 
             for _ in range(20):
                 Bomb(Bombes)
@@ -139,6 +141,8 @@ if __name__ == '__main__':
                     BaseCollideCoord = pos
             if event.type == pygame.MOUSEBUTTONUP:
                 ClickToKey = False
+            if event.type == pygame.WINDOWMINIMIZED:
+                Minimizade += 1
 
         if HealPoints != 0:
             # Чтобы экран был черный сюда нада вписать (0, 0, 0)
@@ -160,6 +164,7 @@ if __name__ == '__main__':
             MyKey.draw()
             HealBar.draw(HealPoints)
             draw_text(screen, f"Immortal = {Immortal}", 500, 0)
+            draw_text(screen, f"Minimizade = {Minimizade}", 500, 100)
             camera.update(NewPers)
             for sprite in Bombes:
                 camera.apply(sprite)
