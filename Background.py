@@ -9,7 +9,7 @@ from random import randint
 class Back(pygame.sprite.Sprite):
     def __init__(self, screen):
         super().__init__()
-        self.image = load_image('static/Trava.jpg')
+        self.image = load_image('static/BackgroundStone.png')
         self.rect = Rect(0, 0, 800, 800)
         self.screen = screen
 

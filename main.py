@@ -32,6 +32,8 @@ import Key
 from Key import *
 import Doors
 from Doors import *
+import Enemy
+from Enemy import *
 
 
 size = width, height = (800, 800)
@@ -71,20 +73,24 @@ if __name__ == '__main__':
     background = Back(screen)
     MyKey = Keys(screen)
     Minimizade = 0
+    Enemys = pygame.sprite.Group()
+    for _ in range(5):
+        EnemyGhost(screen, Enemys)
+    isPause = False
 
 
-    def generate_level(level):
+    def generate_level(lvl):
         new_player, x, y = None, None, None
         global NewPers, NewCar
-        for y in range(len(level)):
-            for x in range(len(level[y])):
-                if level[y][x] == '@':
+        for y in range(len(lvl)):
+            for x in range(len(lvl[y])):
+                if lvl[y][x] == '@':
                     Barrier(x * 82, y * 82, screen, Walls)
-                elif level[y][x] == '#':
+                elif lvl[y][x] == '#':
                     NewCar = Cars(x * 82, y * 82, screen)
-                elif level[y][x] == '$':
+                elif lvl[y][x] == '$':
                     pass
-                elif level[y][x] == 'P':
+                elif lvl[y][x] == 'P':
                     NewPers = Pers(x * 82, y * 82, screen)
         # вернем игрока, а также размер поля в клетках
         return new_player, x, y
@@ -114,6 +120,9 @@ if __name__ == '__main__':
             ClickToKey = False
             BaseCollideCoord = tuple()
             Minimizade = 0
+            for _ in range(5):
+                EnemyGhost(screen, Enemys)
+            isPause = False
 
             for _ in range(20):
                 Bomb(Bombes)
@@ -144,7 +153,11 @@ if __name__ == '__main__':
             if event.type == pygame.WINDOWMINIMIZED:
                 Minimizade += 1
 
-        if HealPoints != 0:
+            key = pygame.key.get_pressed()
+            if key[pygame.K_ESCAPE]:
+                isPause = not isPause
+
+        if HealPoints != 0 and not isPause:
             # Чтобы экран был черный сюда нада вписать (0, 0, 0)
             screen.fill((255, 255, 255))
             Rebullet += 1
@@ -160,8 +173,11 @@ if __name__ == '__main__':
             Ship.draw()
             Bull.draw(screen)
             Walls.draw(screen)
+            Enemys.draw(screen)
             door.draw()
             MyKey.draw()
+            for Ghost in Enemys:
+                Ghost.Intellect(NewPers)
             HealBar.draw(HealPoints)
             draw_text(screen, f"Immortal = {Immortal}", 500, 0)
             draw_text(screen, f"Minimizade = {Minimizade}", 500, 100)
@@ -171,6 +187,8 @@ if __name__ == '__main__':
             for sprite in Walls:
                 camera.apply(sprite)
             for sprite in Bull:
+                camera.apply(sprite)
+            for sprite in Enemys:
                 camera.apply(sprite)
             camera.apply(Ship)
             camera.apply(NewCar)
@@ -192,6 +210,10 @@ if __name__ == '__main__':
                 ClickToKey = False
                 MyKey.kill()
 
+            for i in Enemys:
+                if pygame.sprite.collide_mask(NewPers, i):
+                    HealPoints = 0
+
             for i in Walls:
                 if pygame.sprite.collide_mask(MyKey, i):
                     ClickToKey = False
@@ -203,7 +225,7 @@ if __name__ == '__main__':
                 if door.flag:
                     reset = True
                     level += 1
-                    if level == 3:
+                    if level == 4:
                         level = 1
 
             for i in Bull:
@@ -307,13 +329,14 @@ if __name__ == '__main__':
                 NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
                 NewCurs.draw()
         else:
-            screen.fill((250, 250, 250))
-            GameOverer.draw()
-            RemakeBTN.draw(screen, (100, 100, 100))
-            if pygame.mouse.get_focused():
-                NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
-                NewCurs.draw()
-            EndGame = True
+            if HealPoints == 0:
+                screen.fill((250, 250, 250))
+                GameOverer.draw()
+                RemakeBTN.draw(screen, (100, 100, 100))
+                if pygame.mouse.get_focused():
+                    NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+                    NewCurs.draw()
+                EndGame = True
 
         pygame.display.update()
 
