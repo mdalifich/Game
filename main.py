@@ -43,6 +43,9 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     pygame.mouse.set_visible(False)
     RemakeBTN = Button('Повторим?', 300, 600, 200, 50, (50, 50, 50))
+    PlayBTN = Button('Играть', 300, 200, 200, 50, (50, 50, 50))
+    ExitBTN = Button('Выйти', 300, 600, 200, 50, (50, 50, 50))
+    BackBTN = Button('Выйти в меню', 300, 800, 200, 50, (50, 50, 50))
     reset = True
     running = True
     NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
@@ -65,6 +68,7 @@ if __name__ == '__main__':
     camera = Camera()
     door = DDoors(screen)
     level = 1
+    start = False
     ClickToKey = False
     BaseCollideCoord = tuple()
     for _ in range(10):
@@ -98,6 +102,7 @@ if __name__ == '__main__':
 
     while running:
         if reset:
+            level = 1
             Rebullet = 0
             MyKey = Keys(screen)
             NewCurs = Curs(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], screen)
@@ -112,6 +117,7 @@ if __name__ == '__main__':
             Bombes = pygame.sprite.Group()
             Walls = pygame.sprite.Group()
             Bull = pygame.sprite.Group()
+            Enemys = pygame.sprite.Group()
             speedPersRight = 5
             speedPersLeft = 5
             speedPersUp = 5
@@ -120,7 +126,7 @@ if __name__ == '__main__':
             ClickToKey = False
             BaseCollideCoord = tuple()
             Minimizade = 0
-            for _ in range(5):
+            for _ in range(1):
                 EnemyGhost(screen, Enemys)
             isPause = False
 
@@ -145,6 +151,13 @@ if __name__ == '__main__':
                     bomb.update(event)
                 if RemakeBTN.is_over(pos) and EndGame:
                     reset = True
+                if BackBTN.is_over(pos) and EndGame or BackBTN.is_over(pos) and isPause:
+                    start = False
+                if PlayBTN.is_over(pos) and not start:
+                    reset = True
+                    start = True
+                if ExitBTN.is_over(pos) and not start:
+                    running = False
                 if pygame.sprite.collide_mask(NewCurs, MyKey):
                     ClickToKey = True
                     BaseCollideCoord = pos
@@ -157,7 +170,15 @@ if __name__ == '__main__':
             if key[pygame.K_ESCAPE]:
                 isPause = not isPause
 
-        if HealPoints != 0 and not isPause:
+
+        if not start:
+            screen.fill((255, 255, 255))
+            col = (100, 100, 100)
+            PlayBTN.draw(screen, col)
+            ExitBTN.draw(screen, col)
+
+
+        if HealPoints != 0 and start and not isPause:
             # Чтобы экран был черный сюда нада вписать (0, 0, 0)
             screen.fill((255, 255, 255))
             Rebullet += 1
@@ -324,19 +345,18 @@ if __name__ == '__main__':
                     if pygame.sprite.collide_mask(i, NewPers):
                         speedPersLeft = 0
                         NewPers.rect.x += 5
-
-            if pygame.mouse.get_focused():
-                NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
-                NewCurs.draw()
         else:
             if HealPoints == 0:
                 screen.fill((250, 250, 250))
                 GameOverer.draw()
                 RemakeBTN.draw(screen, (100, 100, 100))
-                if pygame.mouse.get_focused():
-                    NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
-                    NewCurs.draw()
+                BackBTN.draw(screen, (100, 100, 100))
                 EndGame = True
+            else:
+                BackBTN.draw(screen, (100, 100, 100))
+        if pygame.mouse.get_focused():
+            NewCurs.rect.x, NewCurs.rect.y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
+            NewCurs.draw()
 
         pygame.display.update()
 

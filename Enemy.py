@@ -9,7 +9,7 @@ from random import randint
 class EnemyGhost(pygame.sprite.Sprite):
     def __init__(self, screen, group):
         super().__init__(group)
-        self.x, self.y = randint(-800, 800), randint(-800, 800)
+        self.x, self.y = 400, 400#randint(-1200, 1200), randint(-1200, 1200)
         self.image = load_image('static/ghost_creepy.png')
         self.image = pygame.transform.scale(self.image, (192, 108))
         self.rect = Rect(self.x, self.y, 192, 108)
@@ -45,7 +45,7 @@ class EnemyGhost(pygame.sprite.Sprite):
                 self.rect.y -= self.speed
         else:
             if abs(self.rect.x - Pers.rect.x) < abs(self.rect.y - Pers.rect.y):
-                if self.rect.x < Pers.rect.x:
+                if self.rect.x < Pers.rect.x - 82:
                     self.rect.x += self.speed
                 else:
                     self.rect.x -= self.speed
